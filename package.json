@@ -1,0 +1,28 @@
+{
+  "name": "serverless-jwk",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=4.0"
+  },
+  "description": "Generate JWK pair, upload private JWK to AWS Systems Manager Parameter Store, upload public JWK to S3",
+  "author": "pecirep",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pecirep/serverless-jwk"
+  },
+  "keywords": [
+    "jwt",
+    "jwk",
+    "serverless",
+    "serverless plugin",
+    "s3",
+    "aws",
+    "amazon web services",
+    "serverless.com"
+  ],
+  "main": "index.js",
+  "dependencies": {
+    "jose": "^3.6.0"
+  }
+}
