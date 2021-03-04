@@ -42,11 +42,33 @@ class ServerlessJWKPlugin {
         };
     }
 
-    validateConfig() {
-        //TODO: validate bucketName
+    async validateConfig() {
+        let errors = []
+
+        if (!this.options.bucketName) {
+            errors.push('bucketName is required')
+        }
+
+        const s3headBucketRequest = {
+            Bucket: this.options.bucketName
+        };
+        try {
+            await this.aws.request('S3', 'headBucket', s3headBucketRequest);
+        } catch (err) {
+            console.log(err)
+            errors.push('bucketName does not exist or access is forbidden')
+        }
+
+        if (errors.length > 0) throw `JWK plugin configuration errors:\n- ${errors.join('\n- ')}`;
     }
 
     async createAndDeployJWK() {
+        try {
+            await this.validateConfig()
+        } catch (error) {
+            return Promise.reject(new this.error(error))
+        }
+
         const { publicKey, privateKey } = await generateKeyPair('RS256');
 
         const privateJwk = await fromKeyLike(privateKey);
