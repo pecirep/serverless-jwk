@@ -165,8 +165,29 @@ class ServerlessJWKPlugin {
         fs.writeFileSync('./jwt_pubkey.pem', pubKeyPem);
     }
 
+    async deleteJwkFromS3() {
+        const s3deleteObjectRequest = {
+            Bucket: this.options.bucketName,
+            Key: '.well-known/jwks.json'
+        };
+        const deleteObjectResponse = await this.aws.request('S3', 'deleteObject', s3deleteObjectRequest);
+        if (DEBUG) this.serverless.cli.log(`S3 deleteObject response: ${JSON.stringify(deleteObjectResponse)}`, entity);
+    }
+
+    async deleteJwkFromSSM() {
+        const ssmPath = this.options?.ssmPath || `/${this.serverless.service.service}-${this.serverless.service.provider.stage}/auth/jwt/privateJWK` //TODO remove duplicate line
+
+        const deleteParameterRequest = {
+            Name: ssmPath
+        }
+
+        const deleteParameterResponse = await this.aws.request('SSM', 'deleteParameter', deleteParameterRequest);
+        if (DEBUG) this.serverless.cli.log(`SSM DeleteParameter response: ${JSON.stringify(deleteParameterResponse)}`, entity);
+    }
+
     removeDeployedJWK() {
-        //TODO
+        this.deleteJwkFromS3();
+        this.deleteJwkFromSSM();
     }
 }
 
