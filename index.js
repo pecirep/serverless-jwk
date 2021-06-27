@@ -69,7 +69,7 @@ class ServerlessJWKPlugin {
             return Promise.reject(new this.error(error))
         }
 
-        const { publicKey, privateKey } = await generateKeyPair('RS256');
+        const { publicKey, privateKey } = await generateKeyPair('RS256'); //EdDSA
 
         const privateJwk = await fromKeyLike(privateKey);
         const publicJwk = await fromKeyLike(publicKey);
@@ -78,7 +78,7 @@ class ServerlessJWKPlugin {
 
         privateJwk.kid = publicJwk.kid = kid;
         privateJwk.use = publicJwk.use = 'sig';
-        privateJwk.alg = publicJwk.use = 'sig';
+        privateJwk.alg = publicJwk.alg = 'RS256';
 
         const ssmPath = this.options?.ssmPath || `/${this.serverless.service.service}-${this.serverless.service.provider.stage}/auth/jwt/privateJWK`
 
