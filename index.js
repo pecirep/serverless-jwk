@@ -69,7 +69,15 @@ class ServerlessJWKPlugin {
             return Promise.reject(new this.error(error))
         }
 
-        const { publicKey, privateKey } = await generateKeyPair('RS256'); //EdDSA
+        const alg = this.options.alg || 'RS256'
+
+        const { publicKey, privateKey, error } = await generateKeyPair(alg).catch(error => ({error: error}));
+        if (error) {
+            if (DEBUG) this.serverless.cli.log(error);
+            return Promise.reject(
+              new this.error("JWK plugin error: provided jwk.alg is invalid.")
+            );
+        }
 
         const privateJwk = await fromKeyLike(privateKey);
         const publicJwk = await fromKeyLike(publicKey);
@@ -78,7 +86,7 @@ class ServerlessJWKPlugin {
 
         privateJwk.kid = publicJwk.kid = kid;
         privateJwk.use = publicJwk.use = 'sig';
-        privateJwk.alg = publicJwk.alg = 'RS256';
+        privateJwk.alg = publicJwk.alg = alg;
 
         const ssmPath = this.options?.ssmPath || `/${this.serverless.service.service}-${this.serverless.service.provider.stage}/auth/jwk/private`
 
