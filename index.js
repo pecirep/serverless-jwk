@@ -80,7 +80,7 @@ class ServerlessJWKPlugin {
         privateJwk.use = publicJwk.use = 'sig';
         privateJwk.alg = publicJwk.alg = 'RS256';
 
-        const ssmPath = this.options?.ssmPath || `/${this.serverless.service.service}-${this.serverless.service.provider.stage}/auth/jwt/privateJWK`
+        const ssmPath = this.options?.ssmPath || `/${this.serverless.service.service}-${this.serverless.service.provider.stage}/auth/jwk/private`
 
         const putParameterRequest = {
             Name: ssmPath,
@@ -175,7 +175,7 @@ class ServerlessJWKPlugin {
     }
 
     async deleteJwkFromSSM() {
-        const ssmPath = this.options?.ssmPath || `/${this.serverless.service.service}-${this.serverless.service.provider.stage}/auth/jwt/privateJWK` //TODO remove duplicate line
+        const ssmPath = this.options?.ssmPath || `/${this.serverless.service.service}-${this.serverless.service.provider.stage}/auth/jwk/private` //TODO remove duplicate line
 
         const deleteParameterRequest = {
             Name: ssmPath
